@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text-to-Speech Converter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 50px;
+        }
+        textarea, button {
+            margin: 10px 0;
+            padding: 10px;
+            width: 100%;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        audio {
+            margin-top: 20px;
+            display: none; /* Hidden by default, will be shown when audio is ready */
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Text-to-Speech Converter</h1>
+
+    <textarea id="textInput" rows="6" placeholder="Enter text here..."></textarea>
+    <br>
+    <button id="convertButton">Convert to Speech</button>
+
+    <h3>Converted Audio:</h3>
+    <audio id="audioPlayer" controls></audio>
+
+    <script>
+        document.getElementById('convertButton').addEventListener('click', async function () {
+            const text = document.getElementById('textInput').value.trim();
+            if (!text) {
+                alert('Please enter some text!');
+                return;
+            }
+
+            try {
+                // Send the request to your API Gateway endpoint
+                const response = await fetch('ADD API', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ text })
+                });
+
+                // Parse the JSON response
+                const result = await response.json();
+
+                if (response.ok) {
+                    // Load the audio file into the player
+                    const audioPlayer = document.getElementById('audioPlayer');
+                    const body = JSON.parse(result.body); // Parse the body of the response
+                    audioPlayer.src = body.audio_url;
+                    audioPlayer.style.display = 'block';  // Show the audio player
+                    audioPlayer.play();
+                } else {
+                    alert('Error: ' + result.message);
+                }
+
+            } catch (error) {
+                alert('Error occurred: ' + error.message);
+            }
+        });
+    </script>
+
+</body>
+</html>
